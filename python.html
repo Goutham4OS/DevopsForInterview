@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Python Revision Mind Map</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f9fa;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    ul {
+      list-style-type: none;
+      padding-left: 20px;
+    }
+
+    .node {
+      cursor: pointer;
+      font-weight: bold;
+      margin: 6px 0;
+    }
+
+    .content {
+      display: none;
+      margin-left: 20px;
+      padding-left: 10px;
+      border-left: 2px solid #ccc;
+    }
+
+    .leaf {
+      font-weight: normal;
+      cursor: default;
+    }
+  </style>
+
+  <script>
+    function toggle(id) {
+      const el = document.getElementById(id);
+      el.style.display = el.style.display === "none" ? "block" : "none";
+    }
+  </script>
+</head>
+<body>
+
+<h1>Python Revision – Clickable Mind Map</h1>
+
+<ul>
+  <li>
+    <span class="node" onclick="toggle('python')">▶ Python</span>
+    <div id="python" class="content">
+
+      <ul>
+        <li>
+          <span class="node" onclick="toggle('objects')">▶ Objects</span>
+          <div id="objects" class="content">
+            <ul>
+              <li class="leaf">Everything in Python is an object</li>
+              <li class="leaf">Has identity, type, value</li>
+              <li class="leaf">Variables reference objects</li>
+            </ul>
+          </div>
+        </li>
+
+        <li>
+          <span class="node" onclick="toggle('classes')">▶ Classes</span>
+          <div id="classes" class="content">
+            <ul>
+              <li class="leaf">Blueprint for objects</li>
+              <li class="leaf">Defines attributes and methods</li>
+              <li class="leaf">Objects are instances of classes</li>
+            </ul>
+          </div>
+        </li>
+
+        <li>
+          <span class="node" onclick="toggle('attributes')">▶ Attributes</span>
+          <div id="attributes" class="content">
+            <ul>
+              <li class="leaf">Names associated with an object</li>
+              <li class="leaf">Data attributes → state</li>
+              <li class="leaf">Method attributes → behavior</li>
+            </ul>
+          </div>
+        </li>
+
+        <li>
+          <span class="node" onclick="toggle('mutability')">▶ Mutability</span>
+          <div id="mutability" class="content">
+            <ul>
+              <li class="leaf">Immutable: int, str, tuple</li>
+              <li class="leaf">Mutable: list, dict, set</li>
+              <li class="leaf">Design choice at class level</li>
+            </ul>
+          </div>
+        </li>
+
+      </ul>
+
+    </div>
+  </li>
+</ul>
+
+</body>
+</html>
