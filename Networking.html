@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cloud Networking – From On-Prem to Azure & AWS</title>
+
+  <!-- Mermaid -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: "default" });
+  </script>
+
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.6;
+      margin: 40px;
+      background: #fafafa;
+      color: #222;
+    }
+    h1, h2, h3 {
+      color: #0b5394;
+    }
+    code {
+      background: #eee;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .section {
+      margin-bottom: 60px;
+    }
+    .why {
+      background: #eef6ff;
+      padding: 10px;
+      border-left: 4px solid #0b5394;
+    }
+    .interview {
+      background: #f0fff4;
+      padding: 10px;
+      border-left: 4px solid #2f855a;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>Cloud Networking – From Physical to Virtual</h1>
+<p>
+This page explains <b>WHY</b> cloud networking exists, <b>WHAT</b> each component is,
+and <b>HOW</b> they work together in Azure and AWS.
+</p>
+
+<hr />
+
+<!-- ===================================================== -->
+<div class="section">
+<h2>1. On-Prem Networking (Ground Reality)</h2>
+
+<div class="why">
+<b>WHY:</b> Everything started here. Understanding this makes cloud networking obvious.
+</div>
+
+<ul>
+  <li><b>LAN</b> – Network inside a building</li>
+  <li><b>Ethernet</b> – Physical cables</li>
+  <li><b>Switch</b> – Connects servers</li>
+  <li><b>Firewall</b> – Controls traffic</li>
+  <li><b>Router</b> – Connects to other networks / internet</li>
+</ul>
+
+<div class="mermaid">
+flowchart LR
+  Internet --> Firewall
+  Firewall --> Router
+  Router --> Switch
+  Switch --> Server1
+  Switch --> Server2
+</div>
+
+<div class="interview">
+<b>Interview memory:</b>  
+On-prem networking = cables + switches + firewalls + routing.
+</div>
+</div>
+
+<!-- ===================================================== -->
+<div class="section">
+<h2>2. Virtualization Era (VMware, Hyper-V)</h2>
+
+<div class="why">
+<b>WHY:</b> Hardware was expensive → multiple VMs on one server.
+</div>
+
+<ul>
+  <li>Physical NIC → Virtual NIC</li>
+  <li>Physical Switch → Virtual Switch</li>
+  <li>VM still needs networking</li>
+</ul>
+
+<div class="mermaid">
+flowchart LR
+  PhysicalServer --> Hypervisor
+  Hypervisor --> vSwitch
+  vSwitch --> VM1
+  vSwitch --> VM2
+</div>
+
+<div class="interview">
+<b>Interview memory:</b>  
+VMs still need NICs and switches – they just became software.
+</div>
+</div>
+
+<!-- ===================================================== -->
+<div class="section">
+<h2>3. Cloud Networking Core (VPC / VNet)</h2>
+
+<div class="why">
+<b>WHY:</b> Cloud needed isolation like a LAN without hardware.
+</div>
+
+<ul>
+  <li><b>Azure:</b> VNet</li>
+  <li><b>AWS:</b> VPC</li>
+</ul>
+
+<div class="mermaid">
+flowchart TB
+  VPC["VPC / VNet<br>(Your Cloud LAN)"]
+</div>
+
+<div class="interview">
+<b>Interview line:</b>  
+“VPC/VNet is a software-defined LAN.”
+</div>
+</div>
+
+<!-- ===================================================== -->
+<div class="section">
+<h2>4. Subnets (Segmentation)</h2>
+
+<div class="why">
+<b>WHY:</b> Same reason as VLANs → security & control.
+</div>
+
+<ul>
+  <li>Public Subnet → internet facing</li>
+  <li>Private Subnet → internal only</li>
+</ul>
+
+<div class="mermaid">
+flowchart TB
+  VPC --> PublicSubnet["Public Subnet<br>(DMZ)"]
+  VPC --> PrivateSubnet["Private Subnet<br>(App / DB)"]
+</div>
+
+<div class="interview">
+<b>Interview memory:</b>  
+Public = has internet route, Private = no direct internet.
+</div>
+</div>
+
+<!-- ===================================================== -->
+<div class="section">
+<h2>5. NIC (Network Interface Card)</h2>
+
+<div class="why">
+<b>WHY:</b> VM without NIC = server without cable.
+</div>
+
+<ul>
+  <li>NIC gives IP</li>
+  <li>NIC attaches VM to subnet</li>
+  <li>Security Groups attach here</li>
+</ul>
+
+<div class="mermaid">
+flowchart LR
+  VM --> NIC
+  NIC --> Subnet
+</div>
+
+<div class="interview">
+<b>Key fact:</b>  
+All networking decisions eventually apply at the NIC.
+</div>
+</div>
+
+<!-- ===================================================== -->
+<div class="section">
+<h2>6. Security Groups / NSG (Firewall)</h2>
+
+<div class="why">
+<b>WHY:</b> Cloud needs firewall without hardware.
+</div>
+
+<ul>
+  <li>Inbound rules → who can enter</li>
+  <li>Outbound rules → who can leave</li>
+</ul>
+
+<div class="mermaid">
+flowchart LR
+  Internet --> NSG
+  NSG --> VM
+</div>
+
+<div class="interview">
+<b>One-liner:</b>  
+NSG decides <i>allowed or denied</i>, routing decides <i>path</i>.
+</div>
+</div>
+
+<!-- ===================================================== -->
+<div class="section">
+<h2>7. Routing Tables</h2>
+
+<div class="why">
+<b>WHY:</b> Traffic must know where to go.
+</div>
+
+<div class="mermaid">
+flowchart LR
+  VM --> RouteTable
+  RouteTable --> InternetGateway
+  RouteTable --> NATGateway
+</div>
+
+<div class="interview">
+<b>Memory:</b>  
+Routing = GPS, NSG = security guard.
+</div>
+</div>
+
+<!-- ===================================================== -->
+<div class="section">
+<h2>8. Internet Gateway & NAT Gateway</h2>
+
+<div class="why">
+<b>WHY:</b> Separate inbound from outbound.
+</div>
+
+<ul>
+  <li>Internet Gateway → inbound + outbound</li>
+  <li>NAT Gateway → outbound only</li>
+</ul>
+
+<div class="mermaid">
+flowchart LR
+  PrivateVM --> NATGateway --> Internet
+</div>
+
+<div class="interview">
+<b>Golden line:</b>  
+“NAT allows egress without exposing ingress.”
+</div>
+</div>
+
+<!-- ===================================================== -->
+<div class="section">
+<h2>9. Private Endpoint / PrivateLink</h2>
+
+<div class="why">
+<b>WHY:</b> Access PaaS without public internet.
+</div>
+
+<div class="mermaid">
+flowchart LR
+  AKS --> PrivateEndpoint --> Database
+</div>
+
+<div class="interview">
+<b>Clarification:</b>  
+Not VNet-to-VNet. Service is injected into your VNet.
+</div>
+</div>
+
+<!-- ===================================================== -->
+<div class="section">
+<h2>10. VNet / VPC Peering</h2>
+
+<div class="why">
+<b>WHY:</b> Connect networks privately inside cloud.
+</div>
+
+<div class="mermaid">
+flowchart LR
+  VNetA <--> VNetB
+</div>
+
+<div class="interview">
+<b>Rules:</b>  
+Private IP only, no transitive routing by default.
+</div>
+</div>
+
+<!-- ===================================================== -->
+<div class="section">
+<h2>11. VPN (Site-to-Site / Point-to-Site)</h2>
+
+<div class="why">
+<b>WHY:</b> Secure tunnel over internet.
+</div>
+
+<div class="mermaid">
+flowchart LR
+  OnPrem --> Internet --> VPNGateway --> VNet
+</div>
+
+<div class="interview">
+<b>Remember:</b>  
+Uses IPsec + public IP + shared key.
+</div>
+</div>
+
+<!-- ===================================================== -->
+<div class="section">
+<h2>12. ExpressRoute / Direct Connect</h2>
+
+<div class="why">
+<b>WHY:</b> Predictable latency, high bandwidth, private line.
+</div>
+
+<div class="mermaid">
+flowchart LR
+  OnPrem --> Telco --> AzureBackbone --> VNet
+</div>
+
+<div class="interview">
+<b>Bandwidth meaning:</b>  
+How much data can move per second.
+</div>
+</div>
+
+<!-- ===================================================== -->
+<div class="section">
+<h2>13. Azure vs AWS – Mental Mapping</h2>
+
+<table border="1" cellpadding="8">
+<tr><th>Concept</th><th>Azure</th><th>AWS</th></tr>
+<tr><td>Network</td><td>VNet</td><td>VPC</td></tr>
+<tr><td>NIC</td><td>NIC</td><td>ENI</td></tr>
+<tr><td>Firewall</td><td>NSG</td><td>Security Group</td></tr>
+<tr><td>Outbound</td><td>NAT Gateway</td><td>NAT Gateway</td></tr>
+<tr><td>Private Service</td><td>Private Endpoint</td><td>PrivateLink</td></tr>
+<tr><td>Peering</td><td>VNet Peering</td><td>VPC Peering</td></tr>
+<tr><td>VPN</td><td>VPN Gateway</td><td>VPN Gateway</td></tr>
+<tr><td>Dedicated</td><td>ExpressRoute</td><td>Direct Connect</td></tr>
+</table>
+</div>
+
+<hr />
+
+<h2>FINAL INTERVIEW SENTENCE</h2>
+<p>
+Cloud networking is data-center networking rewritten in software.
+</p>
+
+</body>
+</html>
