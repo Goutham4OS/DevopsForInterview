@@ -1,0 +1,57 @@
+# ============================================================
+# Application CI/CD Workflow
+# Owned by App Team
+# Defines WHAT to build and WHEN
+# ============================================================
+
+name: CI/CD Pipeline
+
+# ------------------------------------------------------------
+# Triggers
+# ------------------------------------------------------------
+on:
+  push:
+    branches:
+      - main        # Only main branch deploys
+  workflow_dispatch:  # Manual trigger (optional)
+
+jobs:
+  deploy:
+
+    # --------------------------------------------------------
+    # Matrix allows building multiple services or variants
+    # This example assumes a monorepo with multiple services
+    # --------------------------------------------------------
+    strategy:
+      matrix:
+        service:
+          - pricing
+          - catalog
+          - subscriptions
+
+    # --------------------------------------------------------
+    # Call reusable workflow
+    # Version pinning is CRITICAL (@v1)
+    # --------------------------------------------------------
+    uses: org-ci-templates/.github/workflows/app-cicd-template.yml@v1
+
+    # --------------------------------------------------------
+    # Pass inputs to template
+    # --------------------------------------------------------
+    with:
+      service_name: ${{ matrix.service }}
+      environment: prod
+      docker_context: services/${{ matrix.service }}
+
+    # --------------------------------------------------------
+    # secrets: inherit means:
+    # - Repo secrets
+    # - Environment secrets (prod)
+    # are automatically passed to template
+    #   secrets: inherit
+    # --------------------------------------------------------
+    # or Pass secrets securely to template
+    secrets:
+      GCP_PROJECT_ID: marketplace-prod
+      GCP_WIF_PROVIDER: projects/123/locations/global/workloadIdentityPools/github/providers/github
+      GCP_SERVICE_ACCOUNT: pricing-ci@marketplace-prod.iam.gserviceaccount.com
