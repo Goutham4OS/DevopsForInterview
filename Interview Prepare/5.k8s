@@ -1,0 +1,40 @@
+A Pod is Kubernetes’ smallest scheduling unit, grouping one or more tightly coupled containers that must share network, storage, and lifecycle, enabling patterns like sidecars and init containers.
+
+A secrets operator synchronizes external secrets into Kubernetes Secret objects for ease of use, while a CSI driver mounts secrets directly into Pods without storing them in etcd, providing a stronger security posture and better support for live rotation.
+
+RBAC controls API access, not packet flow.
+
+
+What a NetworkPolicy really is
+
+A firewall rule for Pods, enforced at the network layer.
+
+“A flat network means all east‑west traffic is allowed by default. It’s easy to start with, but dangerous at scale because a single compromise can reach everything. As platform engineers we gradually move to ‘default deny’ with NetworkPolicies, security groups, and proper segmentation.”
+
+Introduce network segmentation:
+
+Subnets/VPCs/VNETs for tiers (web, app, DB).
+
+NSGs / security groups between them.
+
+In Kubernetes:
+
+Apply NetworkPolicies to restrict which namespaces/pods can talk to which.
+
+Add zero‑trust style thinking:
+
+Default deny, explicitly allow needed flows only.
+
+Why webhooks matter for networking
+
+They enforce:
+
+NetworkPolicy must exist
+
+No Pod without labels
+
+No service exposed without approval
+
+No egress without allowlist
+
+This prevents human error, not just attacks.

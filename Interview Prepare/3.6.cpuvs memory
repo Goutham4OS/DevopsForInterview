@@ -1,0 +1,16 @@
+CPU time = life / opportunity / continuation
+Memory = existence / survival / death sentence if you run out
+Simple real-world analogy (restaurant kitchen)
+Imagine a busy restaurant kitchen:
+
+CPU = the head chef (or the single stove burner)
+→ The chef has limited "time slots". He gives every dish (process) a short turn to cook → time-slice.
+→ Even if your dish isn't finished, the chef says "wait, I'll come back later" → your dish lives on, just paused.
+→ CPU gives time → keeps giving tiny bursts of attention → process stays "alive" even if slow.
+RAM (physical memory) = the kitchen counter space / number of plates you can have out at once
+→ There are only 20 plates/counter spots total.
+→ If 30 dishes are being prepared and you demand a 21st plate → no space → the head chef yells "OUT!" or throws something away (your dish dies / gets killed / OOM-killed).
+→ Memory gives death → when it's truly exhausted (after swap is also full or disabled), the OS has no choice but to kill processes.
+
+→ CPU is generous with time (it multiplexes, shares, waits)
+→ Memory is merciless (fixed amount — no sharing magic when it's really gone)

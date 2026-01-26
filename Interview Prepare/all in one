@@ -1,0 +1,14 @@
+If teams can deploy without understanding Kubernetes internals → the platform is doing its job.
+
+hybrid --> what is tool stack rke or k3s what type workload servers on on prem 
+affitinities node , node slectors , 
+
+debuggin skills at different levels
+
+SonarQube → Is this code healthy and reasonably secure?
+
+SAST (deep) → Is there any dangerous logic path at all?
+
+SCA → Are we using vulnerable libraries?
+
+DAST → Can this running system be attacked?
