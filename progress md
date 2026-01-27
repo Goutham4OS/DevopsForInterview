@@ -1,0 +1,61 @@
+k8s all basics and definitions from APIs and api resources crd satteful set oredeing , affinities drain. pdb , rolling update liveness an drediness probes, job cron job ,ingress , ingress sclass controller , different controllers , auto scalers cloud auto scalers , svc headless service ,dns , local debugging, cras loopback error vsimage pull back error debugging , namespace , rbac ,role bindings and cluster bindins , sync with azure ad , workload identy , secrets operator , csi, cni, networking east west and north south, init contontiat,side car , demon sets why not deployments,, similar to stateful why not deployments s, similar replicasets why deployments, k8s architecture, what Is gateway api and ingress controller disadvantages , agic , agfc,pv pvc storage classess, csi ,cri, 
+
+app issues 
+productions failures
+hpa and scaled objects keda 
+troubleshooting 
+memory issues , cpu slowness 
+limits , requests
+endpoints endpointslices 
+cloud load balancer as ingress controller service 
+
+db failures 
+HA , backup on k8s aks what tools onprem and cloud
+db when to use preferred
+when to use on k8s or aks and whento use cloud manged service of db 
+
+redis failures 
+ha scaliblilty 
+troubleshooting and when to use on aks and cloud manged redis 
+
+
+types of cloud services provided in azure 
+aks full see the features ad addons
+fleet 
+
+choas engineering 
+
+dast which tools need to use popular one , cloud tools and opensource an dpaid tools popularly used 
+
+azure basics iam, mgt grp to resources , permissions mangment ment , data and control plane 
+
+load balancer , why appgaeway , what layers it has 
+
+tks certs handling at different levels and terination also
+
+let's encrypt
+
+cosign
+
+storage serivces , ha , private endpoint, types of storage . access tier cost mangament
+
+
+a detailed report or to tell when they ask for cost , security, backup , ha , networking 
+means unsed resources , not runs as root 
+
+validating webhook , azure policy and constraint temlates 
+
+autoscaling vms 
+vm types in azure 
+
+storage types
+
+private subnet , inbound outbound nsg , rules and peering , hub spoke model , 
+
+real architecture end end flow
+
+
+why app gateway has paths and rules if ingress controller has host based path based routing 
+
+why two host l7 layers
+
