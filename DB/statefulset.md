@@ -147,3 +147,63 @@ Cloud Infrastructure
 ---
 
 **End of revision notes**
+
+
+---
+
+## ⚖️ Operator vs Managed DB — Quick Reference Sheet
+
+| Aspect | DB Operator (PostgresCluster in AKS) | Managed Azure Database (PaaS) |
+|--------|--------------------------------------|-------------------------------|
+| Where it runs | Inside your AKS cluster | Azure-managed service |
+| Control level | High (full DB config access) | Limited |
+| Operational effort | Medium (K8s + operator) | Very Low |
+| Scaling | K8s-driven + DB config | Portal/API driven |
+| Failover | Operator automated | Azure automated |
+| Backups | Operator/DIY policies | Built-in |
+| Upgrades | Operator-controlled | Azure-controlled |
+| Cloud portability | High (multi-cloud) | Low (Azure only) |
+| Custom extensions/plugins | Fully supported | Restricted |
+| Network latency to app | Very low (in-cluster) | Higher (external endpoint) |
+| Best for | Platform workloads, custom DB needs | Standard business apps |
+
+### 🧠 Decision Shortcut
+
+| If you want... | Choose |
+|----------------|--------|
+| Zero DB ops | Managed DB |
+| Full control | Operator |
+| Cloud portability | Operator |
+| Simplicity | Managed DB |
+| Deep DB tuning | Operator |
+
+
+
+---
+
+## 💥 Failure Scenario Cheat Sheet (Stateful DB in Kubernetes)
+
+| Failure Event | What Happens Internally | System Behavior | Data Risk |
+|---------------|------------------------|-----------------|-----------|
+| DB Pod crash | Replica detects primary down → election triggered | New primary promoted automatically | Very low |
+| Node failure | Pod rescheduled on another node → volume reattached | Short failover delay | Very low |
+| Disk issue | PVC rebind or disk replaced | Pod restart required | Depends on replication |
+| Network partition | Quorum check fails on minority side | Minority becomes read-only | Prevents corruption |
+| Primary region outage | DR replica promoted in secondary region | Traffic redirected via DNS | Small async loss possible |
+| Split-brain attempt | Quorum + leader lease prevents dual primary | One side fenced off | Avoids data divergence |
+
+---
+
+## ⚖️ HA vs DR — Comparison Table
+
+| Feature | High Availability (HA) | Disaster Recovery (DR) |
+|----------|------------------------|-------------------------|
+| Scope | Node/Pod failure | Region-level failure |
+| Location | Same region | Different region |
+| Replication | Sync or async | Mostly async |
+| Failover speed | Seconds | Minutes |
+| Data loss risk | Near zero | Possible (depends on lag) |
+| Automation | Fully automatic | Semi/Manual sometimes |
+| Complexity | Medium | High |
+| Goal | Keep service running | Survive catastrophe |
+
