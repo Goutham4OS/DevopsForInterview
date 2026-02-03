@@ -1,6 +1,6 @@
 # Terraform Learning Guide (Practical + Memorization)
 
-This guide complements `learning.tf` with workflows, diagrams, best practices, and real-world scenarios.
+This guide complements `learning.tf` with workflows, diagrams, best practices, real-world scenarios, and memory aids.
 
 ---
 
@@ -9,14 +9,22 @@ This guide complements `learning.tf` with workflows, diagrams, best practices, a
 **Remember the flow:**
 `write -> init -> plan -> apply -> observe -> iterate -> destroy`
 
+**Memory hook (W-I-P-A-O-I-D):** *Write it, Init it, Plan it, Apply it, Observe it, Iterate, Destroy if needed.*
+
 **Key files**
 - `*.tf` — configuration
 - `terraform.tfstate` — current real-world state snapshot
 - `.terraform/` — provider plugins + module cache
 - `terraform.lock.hcl` — provider dependency lock file
+- `.terraform.tfstate.lock.info` — lock metadata when using a backend with locking
 
 **Fast memory anchor:**
 - *Variables in, resources in the middle, outputs out.*
+
+**“3-Layer Cake” mnemonic:**
+```
+Inputs (variables)  ->  Logic (locals + resources + modules)  ->  Outputs
+```
 
 ---
 
@@ -30,6 +38,8 @@ This guide complements `learning.tf` with workflows, diagrams, best practices, a
 - **resource**: manage infrastructure.
 - **module**: reusable bundle of resources.
 - **output**: expose values.
+
+**Memory phrase (TPV LDRMO):** *“Terraform Providers Verify, Locals Data Resources Modules Outputs.”*
 
 ---
 
@@ -55,10 +65,24 @@ This guide complements `learning.tf` with workflows, diagrams, best practices, a
 - `terraform state mv <src> <dst>`
 - `terraform state rm <addr>`
 
+### Local Backend (Default)
+**Local backend** stores `terraform.tfstate` on disk in the working directory. It is the default if no backend is configured.
+**Pros:** simple, great for learning.  
+**Cons:** no collaboration/locking, easy to lose or overwrite.
+
 ### Remote State (Recommended)
 **Use remote state for:** collaboration, locking, and recovery.
 
 Example remote backend: S3 + DynamoDB (locking).
+
+### State Corruption: What It Looks Like + Recovery
+**Symptoms:** `state snapshot was created by Terraform vX`, JSON parse errors, resources missing from state.  
+**Recovery checklist:**
+1. **Stop** and back up the current state file.  
+2. If using remote state, check backend health and version.  
+3. Restore from a prior backup if available.  
+4. Re-import missing resources (`terraform import`).  
+5. Run `terraform plan` to verify drift and reconciliation.
 
 ---
 
@@ -70,22 +94,26 @@ terraform init
 ```
 - Downloads providers
 - Configures backend
+- Creates `.terraform/` and `.terraform.lock.hcl`
 
 ### Step 2: Validate and Format
 ```
 terraform fmt
 terraform validate
 ```
+**Remember:** *fmt first, validate second.*
 
 ### Step 3: Plan
 ```
 terraform plan -out=tfplan
 ```
+**Tip:** use `-var-file` for per-environment inputs.
 
 ### Step 4: Apply
 ```
 terraform apply tfplan
 ```
+**Tip:** `terraform apply -auto-approve` for CI (use carefully).
 
 ### Step 5: Observe
 ```
@@ -99,6 +127,24 @@ terraform plan
 terraform apply
 terraform destroy
 ```
+
+### Most-Used CLI Commands (Quick Recall)
+- `terraform init` — initialize project
+- `terraform validate` — static validation
+- `terraform fmt` — format config
+- `terraform plan` — preview changes
+- `terraform apply` — create/update
+- `terraform destroy` — tear down
+- `terraform output` — show outputs
+- `terraform show` — show state/plan
+- `terraform providers` — provider tree
+- `terraform graph` — DOT graph
+- `terraform state ...` — manage state
+- `terraform workspace ...` — manage workspaces
+- `terraform import` — bring existing resources under Terraform
+
+**Memory hook:** *“I V F P A D O S P G S W I”*  
+(Init, Validate, Fmt, Plan, Apply, Destroy, Output, Show, Providers, Graph, State, Workspace, Import)
 
 ---
 
@@ -117,6 +163,22 @@ terraform destroy
 terraform plan -var-file=envs/dev.tfvars
 terraform apply -var-file=envs/dev.tfvars
 ```
+
+### “Scaffold” a Project (Terraform Has No Built-in Generator)
+Terraform doesn’t provide a built-in project generator like `helm create`.
+Instead, use a **starter layout**:
+```
+terraform/
+  main.tf
+  variables.tf
+  outputs.tf
+  versions.tf
+  providers.tf
+  envs/
+    dev.tfvars
+    prod.tfvars
+```
+**Tip:** Create your own internal template repo for teams and clone it to start new projects.
 
 ---
 
@@ -165,6 +227,8 @@ terraform/
 - **count** = *number-based*, use when identical resources.
 - **for_each** = *key-based*, use when objects vary or need stable identity.
 
+**Mnemonic:** *Count = clone by number, For_each = clone by key.*
+
 ---
 
 ## 8) Drift: What It Is + How to Detect
@@ -200,6 +264,11 @@ output "db_password" {
 }
 ```
 
+**Extra hardening:**
+- Use `.tfvars` files that are git-ignored.
+- Use `sensitive = true` on variables, too.
+- Consider using CI secrets to inject variables during plan/apply.
+
 ---
 
 ## 10) Validation and Testing
@@ -207,6 +276,8 @@ output "db_password" {
 - `terraform validate` for syntax and type checks.
 - Use `validation` blocks in variables.
 - Use `tflint` or `checkov` for policy checks (optional).
+
+**Validation memory hook:** *validate config, validate inputs, validate policy.*
 
 ---
 
@@ -229,6 +300,11 @@ terraform apply -replace=aws_instance.web
 terraform state mv aws_instance.web aws_instance.web_old
 ```
 
+### Force Unlock (When Lock is Stuck)
+```
+terraform force-unlock <lock_id>
+```
+
 ---
 
 ## 12) Common Issues + Fixes
@@ -239,19 +315,31 @@ terraform state mv aws_instance.web aws_instance.web_old
 | Provider auth error | bad creds | check env vars/credentials |
 | State lock error | stale lock | `terraform force-unlock <lock_id>` |
 | Drift detected | manual changes | re-apply or import |
+| State corruption | file edited or broken | restore backup or re-import |
 
 ---
 
 ## 13) Functions (Quick Reference)
 
-- `merge(map1, map2)`
-- `join(",", list)`
-- `toset(list)`
-- `length(list)`
-- `regex(pattern, string)`
-- `try(a, b, c)`
-- `coalesce(a, b)`
-- `lookup(map, key, default)`
+### Common Functions + Examples
+- `merge(map1, map2)` → `merge({a=1},{b=2})`
+- `join(",", list)` → `join(",", ["a","b"])` => `"a,b"`
+- `toset(list)` → `toset(["a","a"])` => `["a"]`
+- `length(list)` → `length(["a","b"])` => `2`
+- `regex(pattern, string)` → `regex("^[a-z]+$", "dev")`
+- `try(a, b, c)` → `try(var.maybe, "fallback")`
+- `coalesce(a, b)` → first non-null value
+- `lookup(map, key, default)` → safe map lookup
+- `format("%s-%s", var.env, "web")`
+- `lower("Prod")` => `"prod"`
+- `replace("prod-db", "-", "_")` => `"prod_db"`
+
+### Remember Functions Fast
+**Group them:**
+- **Lists/Sets:** `length`, `join`, `toset`
+- **Maps:** `merge`, `lookup`
+- **Strings:** `format`, `lower`, `replace`, `regex`
+- **Fallbacks:** `try`, `coalesce`
 
 ---
 
@@ -282,6 +370,17 @@ Terraform
     └── workspaces (avoid)
 ```
 
+### ASCII Diagram: Config to State to Reality
+```
+Variables -> Resources -> Outputs
+     \          |           /
+      \         |          /
+       +------ State ------+
+               |
+               v
+          Real Infrastructure
+```
+
 ---
 
 ## 15) Easy-to-Remember Cheat Sheet
@@ -299,6 +398,8 @@ Terraform
 - `terraform plan`
 - Confirm workspace or env folder
 
+**One-liner memory:** *“Format, Validate, Plan, Apply.”*
+
 ---
 
 ## 16) Suggested File Layout (Beginner)
@@ -312,6 +413,18 @@ terraform/
     prod.tfvars
 ```
 
+**More complete layout:**
+```
+terraform/
+  versions.tf
+  providers.tf
+  variables.tf
+  main.tf
+  outputs.tf
+  modules/
+  envs/
+```
+
 ---
 
 ## 17) Definitions to Remember (Flash Cards)
@@ -321,3 +434,4 @@ terraform/
 - **Plan:** Execution preview.
 - **Module:** Reusable Terraform unit.
 - **Provider:** API plugin to manage resources.
+- **Backend:** Where state is stored (local or remote).

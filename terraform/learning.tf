@@ -192,3 +192,8 @@ output "security_group_id" {
 // - for_each: create per map/set with stable keys
 // - lifecycle: customize create/replace/destroy behavior
 // - provider: override provider config per resource (alias)
+
+// QUICK MEMORY AID
+// Inputs -> Logic -> Outputs
+// Variables -> Locals/Data/Resources/Modules -> Outputs
+// State is the "memory" that connects this config to real infrastructure.
